@@ -1,20 +1,46 @@
 import { useState } from "react";
 
 const TwoStepForm = () => {
-  const [currentStep, setCurrentStep] = useState(1);
+  let [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [submittedData, setSubmittedData] = useState(null);
 
-  const handleEmailChange = (e) => {}
-  const handlePasswordChange = (e) => {}
+  const handleEmailChange = (e) => {
+    setFormData(currentFormData => ({
+        ...currentFormData,
+        email: e.target.value,
+    }))
+  }
+  const handlePasswordChange = (e) => {
+    setFormData(currentFormData => ({
+        ...currentFormData,
+        password: e.target.value,
+    }))
+  }
 
-  const goToNextStep = () => {}
-  const goToPreviousStep = () => {}
+  const goToNextStep = () => {
+    setCurrentStep(curr=> curr + 1)
+  }
 
-  const handleSubmit = () => {
+  const goToPreviousStep = () => {
+    setCurrentStep(curr=> curr - 1)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmittedData(currentState=>({
+            email: formData.email,
+            password: formData.password,
+    }));
+    setCurrentStep(1);
+    setFormData({
+      email: "",
+      password: "",
+    });
 		// Requirements upon submission. 
 		//
 	  // 1. Set submitted data after submitting the form. Submitted data should have the password and email
@@ -22,10 +48,15 @@ const TwoStepForm = () => {
 	  // 3. Go back to step 1
   };
 
-  const resetSubmission = () => {}
+  const resetSubmission = (e) => {
+    e.preventDefault();
+    setCurrentStep(1);
+    setSubmittedData(null);
+    e.target.form.reset();
+  }
 
   return (
-    <div className="max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
+    <form className="max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg" onSubmit={handleSubmit}>
       {/* Display submitted data if available */}
       {submittedData && (
         <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
@@ -66,6 +97,7 @@ const TwoStepForm = () => {
             <input
               type="email"
               id="email"
+              required
               value={formData.email}
               onChange={handleEmailChange}
               placeholder="Enter your email"
@@ -75,7 +107,8 @@ const TwoStepForm = () => {
 
           <button
             onClick={goToNextStep}
-            className="w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+            disabled={formData.email === ''}
+            className="w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors disabled:bg-white"
           >
             Next Step
           </button>
@@ -115,8 +148,9 @@ const TwoStepForm = () => {
             </button>
 
             <button
-              onClick={handleSubmit}
-              className="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-colors"
+              type="submit"
+              disabled={formData.password.length === 0}
+              className="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-colors disabled:bg-white"
             >
               Submit Form
             </button>
@@ -139,7 +173,7 @@ const TwoStepForm = () => {
           ></div>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
